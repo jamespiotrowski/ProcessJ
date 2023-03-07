@@ -7,7 +7,6 @@ Page 80:
 
 Page 81:
  - Says "proc" instead of "public void"
- - FIFO6 only reads 5 numbers then quits? Should have while(true)
 
 
 Overall:
