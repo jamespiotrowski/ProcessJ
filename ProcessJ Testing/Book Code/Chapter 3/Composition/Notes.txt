@@ -1,0 +1,16 @@
+3.7.4
+
+Page 78
+
+Page 80:
+ - Says "public proc" should say "public void"
+
+Page 81:
+ - Says "proc" instead of "public void"
+ - FIFO6 only reads 5 numbers then quits? Should have while(true)
+
+
+Overall:
+ - FIFO6 has major issue. We are cramming ~5 channels between the in and out of the same channel.
+   Something has to consume the input. If you use blackHole, you might think it works, but
+   it competes to read from the channel end that feeds into the queue.... 

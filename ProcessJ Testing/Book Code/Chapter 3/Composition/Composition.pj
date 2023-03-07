@@ -1,0 +1,99 @@
+import std.*;
+
+public void id(chan<int>.read in, chan<int>.write out){
+    while(true){
+        int x;
+        x = in.read();
+        println("id: " + x); // For testing
+        out.write(x);
+    }
+}
+
+public void succ(chan<int>.read in, chan<int>.write out){
+    while(true){
+        int x;
+        x = in.read();
+        out.write(x + 1);
+    }
+}
+
+public void blackHole(chan<int>.read in){
+    while(true){
+        int x;
+        x = in.read();
+        println("Black Hole: " + x); // For testing
+    }
+}
+
+public void plus(chan<int>.read in1, chan<int>.read in2, chan<int>.write out){
+    while(true){
+        int x1, x2;
+        par{
+            x1 = in1.read();
+            x2 = in2.read();
+        }
+        out.write(x1 + x2);
+    }
+}
+
+public void delta(chan<int>.read in, chan<int>.write out1, chan<int>.write out2){
+    while(true){
+        int x;
+        x = in.read();
+        par{
+            out1.write(x);
+            out2.write(x);
+        }
+    }
+}
+
+public void prefix(const int n, chan<int>.read in, chan<int>.write out){
+    out.write(n);
+    id(in,out);
+}
+
+public void tail(chan<int>.read in, chan<int>.write out){
+    int x;
+    x = in.read();
+    id(in,out);
+}
+
+public void FIFO6(chan<int>.read in, chan<int>.write out){
+    chan<int> c1,c2,c3,c4,c5;
+    par{
+        id(in, c1.write);
+        id(c1.read, c2.write);
+        id(c2.read, c3.write);
+        id(c3.read, c4.write);
+        id(c4.read, c5.write);
+        id(c5.read, out);
+    }
+}
+
+public void numbers(chan<int>.write out){
+    chan<int> a, b, c;
+    par{
+        delta(a.read, out, b.write);
+        succ(b.read, c.write);
+        prefix(0, c.read, a.write);
+    }
+}
+
+/**** Not in book - used for tesing ****/
+public void writer(chan<int>.write out){
+    /**** For FIFO6 ****/
+    for(int i = 0; i < 1000; i++){
+        println("Writing: " + i);
+        out.write(i);
+    }
+}
+
+public void main(string[] args){
+    /**** TESTING FIFO6 ****/
+    chan<int> int, out;
+    par{
+        FIFO6(channel.read, channel.write);
+        writer(channel.write);
+        //blackHole(channel.read);
+    }
+}
