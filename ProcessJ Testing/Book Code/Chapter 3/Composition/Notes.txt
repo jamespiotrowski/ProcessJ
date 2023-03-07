@@ -8,8 +8,3 @@ Page 80:
 Page 81:
  - Says "proc" instead of "public void"
 
-
-Overall:
- - FIFO6 has major issue. We are cramming ~5 channels between the in and out of the same channel.
-   Something has to consume the input. If you use blackHole, you might think it works, but
-   it competes to read from the channel end that feeds into the queue.... 

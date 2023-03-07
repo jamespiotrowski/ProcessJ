@@ -90,10 +90,10 @@ public void writer(chan<int>.write out){
 
 public void main(string[] args){
     /**** TESTING FIFO6 ****/
-    chan<int> int, out;
+    chan<int> in, out;
     par{
-        FIFO6(channel.read, channel.write);
-        writer(channel.write);
-        //blackHole(channel.read);
+        FIFO6(in.read, out.write);
+        writer(in.write);
+        blackHole(out.read);
     }
 }
