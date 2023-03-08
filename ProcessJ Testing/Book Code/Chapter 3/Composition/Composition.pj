@@ -1,5 +1,17 @@
 import std.*;
 
+/**** Not in book - used for tesing ****/
+public void writer(chan<int>.write out){
+    /**** For FIFO6 ****/
+    for(int i = 0; i < 100; i++){
+        println("Writing: " + i);
+        out.write(i);
+    }
+}
+
+/**************************************************
+    START BOOK CODE 
+**************************************************/
 public void id(chan<int>.read in, chan<int>.write out){
     while(true){
         int x;
@@ -79,21 +91,125 @@ public void numbers(chan<int>.write out){
     }
 }
 
-/**** Not in book - used for tesing ****/
-public void writer(chan<int>.write out){
-    /**** For FIFO6 ****/
-    for(int i = 0; i < 1000; i++){
-        println("Writing: " + i);
-        out.write(i);
+public void integrate(chan<int>.read in, chan<int>.write out){
+    chan<int> a, b, c;
+    par{
+        delta(a.read, out, b.write);
+        prefix(0, b.read, c.write);
+        plus(in, c.read, a.write);
+    }
+}
+
+public void pairs(chan<int>.read in, chan<int>.write out){
+    chan<int> a, b, c;
+    par{
+        delta(in, a.write, c.write);
+        tail(a.read, b.write);
+        plus(b.read, c.read, out);
+    }
+}
+
+public void fibonacci(chan<int>.write out){
+    chan<int> a, b, c, d;
+    par{
+        delta(a.read, b.write, out);
+        pairs(b.read, c.write);
+        prefix(0, d.read, a.write);
+        prefix(1, c.read, d.write);
+    }
+}
+
+public void squares(chan<int>.write out){
+    chan<int> a, b;
+    par{
+        numbers(a.write);
+        integrate(a.read, b.write);
+        pairs(b.read, out);
     }
 }
 
 public void main(string[] args){
-    /**** TESTING FIFO6 ****/
-    chan<int> in, out;
-    par{
-        FIFO6(in.read, out.write);
-        writer(in.write);
-        blackHole(out.read);
+    int TEST_FIFO6 = 0;
+    int TEST_NUMBERS = 1;
+    int TEST_INTEGRATE = 2;
+    int TEST_PAIRS = 3;
+    int TEST_FIBONACCI = 4;
+    int TEST_SQUARES = 5;
+
+    int test = 
+        //TEST_FIFO6;
+        //TEST_NUMBERS;
+        //TEST_INTEGRATE;
+        //TEST_PAIRS;
+        //TEST_FIBONACCI;
+        TEST_SQUARES;
+
+    switch(test){
+        /**** TESTING FIFO6 ****/
+        case(0) : { 
+            chan<int> in, out;
+            par{
+                FIFO6(in.read, out.write);
+                writer(in.write);
+                blackHole(out.read);
+            }
+            break;
+        }
+
+        /**** TESTING NUMBERS ****/
+        case(1) : { 
+            chan<int> out;
+            par{
+                numbers(out.write);
+                blackHole(out.read);
+            }
+            break;
+        }
+
+        /**** TESTING INTEGRATE ****/
+        case(2) : { 
+            chan<int> in, out;
+            par{
+                writer(in.write);
+                integrate(in.read, out.write);
+                blackHole(out.read);
+            }
+            break;
+        }
+
+        /**** TESTING PAIRS ****/
+        case(3) : { 
+            chan<int> in, out;
+            par{
+                writer(in.write);
+                pairs(in.read, out.write);
+                blackHole(out.read);
+            }
+            break;
+        }
+
+        /**** TESTING FIBONACCI ****/
+        case(4) : { 
+            chan<int> out;
+            par{
+                fibonacci(out.write);
+                blackHole(out.read);
+            }
+            break;
+        }
+
+        /**** TESTING SQUARES ****/
+        case(5) : { 
+            chan<int> out;
+            par{
+                squares(out.write);
+                blackHole(out.read);
+            }
+            break;
+        }
+
+        default : {
+            break;
+        }
     }
 }
